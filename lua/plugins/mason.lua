@@ -15,6 +15,7 @@ return {
         "angular-language-server",
         "basedpyright",
         "gopls",
+        "eslint-lsp",
         "json-lsp",
         "yaml-language-server",
         "helm-ls",
@@ -26,12 +27,10 @@ return {
         "taplo",
         "marksman",
 
-        -- install formatters
+        -- install formatters / linters
         "stylua",
-        "eslint-lsp",
         "ruff",
         "ansible-lint",
-        "jsonlint",
 
         -- install debuggers
         "debugpy",

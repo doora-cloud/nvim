@@ -6,9 +6,8 @@ return {
     transparent_background = false,
     term_colors = true,
     integrations = {
-      cmp = true,
       gitsigns = true,
-      nvimtree = true,
+      neotree = true,
       treesitter = true,
       notify = true,
       mini = {

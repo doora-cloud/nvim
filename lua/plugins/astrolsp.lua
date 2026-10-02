@@ -36,6 +36,8 @@ return {
       -- end
     },
     -- enable servers that you already have installed without mason
+    -- NOTE: servers whose Mason packages are installed (see mason.lua) are
+    -- enabled automatically; this list only needs servers not managed by Mason
     servers = {
       "basedpyright",
       "vtsls",
@@ -50,10 +52,7 @@ return {
       "gopls",
       "jsonls",
       "ansiblels",
-      "ansible-lint",
-      "jsonlint",
       "terraformls",
-      "ansiblels",
       "taplo",
       "marksman",
     },
