@@ -11,7 +11,7 @@ return {
     -- Configuration table of features provided by AstroLSP
     features = {
       codelens = true, -- enable/disable codelens refresh on start
-      inlay_hints = false, -- enable/disable inlay hints on start
+      inlay_hints = true, -- enable/disable inlay hints on start (toggle: <Leader>uh buffer / <Leader>uH global)
       semantic_tokens = true, -- enable/disable semantic token highlighting
     },
     -- customize lsp formatting options
@@ -26,37 +26,21 @@ return {
           -- "python",
         },
       },
-    disabled = { -- disable formatting capabilities for the listed language servers
-      "eslint", -- let prettier handle formatting; eslint LSP formatting is slow on large projects
-      -- disable lua_ls formatting capability if you want to use StyLua to format your lua code
-      -- "lua_ls",
-    },
+      disabled = { -- disable formatting capabilities for the listed language servers
+        "eslint", -- let prettier handle formatting; eslint LSP formatting is slow on large projects
+        -- disable lua_ls formatting capability if you want to use StyLua to format your lua code
+        -- "lua_ls",
+      },
       timeout_ms = 1000, -- default format timeout
       -- filter = function(client) -- fully override the default formatting function
       --   return true
       -- end
     },
-    -- enable servers that you already have installed without mason
-    -- NOTE: servers whose Mason packages are installed (see mason.lua) are
-    -- enabled automatically; this list only needs servers not managed by Mason
-    servers = {
-      "basedpyright",
-      "vtsls",
-      "angularls",
-      "yamlls",
-      "helm_ls",
-      "eslint",
-      "lua_ls",
-      "dockerls",
-      "docker_compose_language_service",
-      "ruff",
-      "gopls",
-      "jsonls",
-      "ansiblels",
-      "terraformls",
-      "taplo",
-      "marksman",
-    },
+    -- language servers are NOT listed here: AstroNvim v6 auto-enables every
+    -- installed Mason package that maps to an lspconfig server (see
+    -- lua/plugins/mason.lua ensure_installed). Only servers NOT managed by
+    -- Mason would need to be added to `servers` below.
+    servers = {},
     -- customize language server configuration passed to `vim.lsp.config`
     -- client specific configuration can also go in `lsp/` in your configuration root (see `:h lsp-config`)
     config = {
@@ -70,28 +54,9 @@ return {
       -- the key is the server that is being setup with `vim.lsp.config`
       -- rust_analyzer = false, -- setting a handler to false will disable the set up of that language server
     },
-    -- Configure buffer local auto commands to add when attaching a language server
-    autocmds = {
-      -- first key is the `augroup` to add the auto commands to (:h augroup)
-      lsp_codelens_refresh = {
-        -- Optional condition to create/delete auto command group
-        -- can either be a string of a client capability or a function of `fun(client, bufnr): boolean`
-        -- condition will be resolved for each client on each execution and if it ever fails for all clients,
-        -- the auto commands will be deleted for that buffer
-        cond = "textDocument/codeLens",
-        -- cond = function(client, bufnr) return client.name == "lua_ls" end,
-        -- list of auto commands to set
-        {
-          -- events to trigger
-          event = { "InsertLeave", "BufEnter" },
-          -- the rest of the autocmd options (:h nvim_create_autocmd)
-          desc = "Refresh codelens (buffer)",
-          callback = function(args)
-            if require("astrolsp").config.features.codelens then vim.lsp.codelens.enable(true, { bufnr = args.buf }) end
-          end,
-        },
-      },
-    },
+    -- Buffer local auto commands for LSP buffers are not needed here: codelens
+    -- refreshing is handled by Neovim's built-in `vim.lsp.codelens` (debounced,
+    -- wired up by astrolsp's `features.codelens` on attach).
     -- mappings to be set up on attaching of a language server
     mappings = {
       n = {
@@ -100,6 +65,13 @@ return {
           function() vim.lsp.buf.declaration() end,
           desc = "Declaration of current symbol",
           cond = "textDocument/declaration",
+        },
+        -- override Neovim 0.11 default (vim.lsp.buf.references -> quickfix list)
+        -- with a snacks.picker popup: list left, preview right
+        grr = {
+          function() require("snacks").picker.lsp_references() end,
+          desc = "References of cursor symbol",
+          cond = "textDocument/references",
         },
         ["<Leader>uY"] = {
           function() require("astrolsp.toggles").buffer_semantic_tokens() end,

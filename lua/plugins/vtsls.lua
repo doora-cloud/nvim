@@ -19,6 +19,27 @@ return {
               },
             },
           },
+          -- inlay hints (shown because astrolsp features.inlay_hints = true;
+          -- same shape as VSCode's typescript/javascript.inlayHints.*)
+          typescript = {
+            inlayHints = {
+              parameterNames = { enabled = "literals", suppressWhenArgumentMatchesName = true },
+              functionLikeExpressionTypes = { enabled = true },
+              enumMemberValues = { enabled = true },
+              -- kept off: noisy
+              variableTypes = { enabled = false },
+              propertyDeclarationTypes = { enabled = false },
+            },
+          },
+          javascript = {
+            inlayHints = {
+              parameterNames = { enabled = "literals", suppressWhenArgumentMatchesName = true },
+              functionLikeExpressionTypes = { enabled = true },
+              enumMemberValues = { enabled = true },
+              variableTypes = { enabled = false },
+              propertyDeclarationTypes = { enabled = false },
+            },
+          },
         },
       },
     },

@@ -26,14 +26,18 @@ return {
         "terraform-ls",
         "taplo",
         "marksman",
+        "jsonnet-language-server",
 
         -- install formatters / linters
         "stylua",
         "ruff",
         "ansible-lint",
+        "jsonnetfmt",
 
         -- install debuggers
         "debugpy",
+        "js-debug-adapter",
+        "delve",
 
         -- install any other package
         "tree-sitter-cli",

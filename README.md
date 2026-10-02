@@ -6,16 +6,31 @@ Personal Neovim configuration based on [AstroNvim](https://astronvim.com) v6, pr
 - **Completion:** blink.cmp
 - **File explorer:** neo-tree
 - **Fuzzy finder:** snacks.nvim
+- **Editing:** flash.nvim (jump), mini.surround, mini.ai (textobjects)
+- **Tests:** neotest (Vitest/Jest, pytest, go test) + DAP debugging
 - **LSP/formatters:** auto-installed via Mason (vtsls, angularls, basedpyright, ruff, gopls, lua_ls, yaml/helm/docker/ansible/terraform LSPs, prettierd, stylua...)
 - **Font:** Maple Mono NF
 
 ## Requirements
 
-- macOS + [Homebrew](https://brew.sh)
+- macOS (Homebrew) hoặc Linux (Debian/Ubuntu & derivatives, Arch, Fedora, Alpine — kể cả iSH trên iPad)
 - Neovim **>= 0.11** (AstroNvim v6 requirement; currently running on 0.12.x)
 - Git
 
-## Installation on macOS
+## Quick setup (macOS / Linux / iSH)
+
+Một lệnh duy nhất cài đủ mọi dependency (Neovim, Maple Mono NF, Node LTS qua nvm, git/ripgrep/fd/lazygit/shellcheck/shfmt, C toolchain, python3) và symlink config vào `~/.config/nvim`:
+
+```sh
+bash setup.sh
+```
+
+Script idempotent (chạy lại bao nhiêu lần cũng an toàn). Ghi chú theo nền tảng:
+
+- **Debian/Ubuntu:** Neovim được cài từ tarball chính thức (apt luôn cũ hơn 0.11); Node qua nvm như yêu cầu.
+- **Alpine / iSH (iPad):** Node cài qua `apk` (binary Node chính thức chỉ build cho glibc, không chạy trên musl/i386 của iSH). Trên iSH không cần cài font — font do app iOS render; lần mở nvim đầu sẽ chậm vì CPU emulate.
+
+## Manual install (macOS)
 
 ### 1. Install dependencies
 
@@ -71,7 +86,9 @@ To update later: `<Leader>pa` (update Lazy + Mason) or `:Lazy sync`.
 - **The leader key is `Space`**, the local leader is `,`. Press `Space` and wait a second for which-key to show a menu of all shortcuts.
 - Finding things: `Space ff` (find files), `Space fw` (find words — ripgrep), `Space fb` (buffers), `Space fh` (help).
 - File explorer: `Space e` toggles neo-tree, `Space o` focuses it.
+- Jumping: press `s` then type any 2 visible letters to jump there instantly (flash.nvim).
 - LSPs attach automatically by filetype; files are **formatted automatically on save** (prettierd/stylua/ruff...).
+- Inlay hints hiển thị type/parameter (TS/JS) — tắt tạm bằng `Space uh`.
 - Completion (blink.cmp): suggestions appear as you type — `Tab`/`S-Tab` to select, `Enter` to accept, `Esc` to dismiss.
 - Floating terminal: `Ctrl+'` (or `Ctrl+/` depending on your terminal); lazygit: `Space gg`.
 - Quick exits: `Space Q` (quit AstroNvim), `Space q` (close window), `Space c` (close buffer).
@@ -125,6 +142,54 @@ To update later: `<Leader>pa` (update Lazy + Mason) or `:Lazy sync`.
 | `Ctrl+Arrows`  | Resize split                        |
 | `\` / `|`      | Horizontal / vertical split         |
 
+### Motion & Editing (flash, mini.surround, mini.ai)
+
+| Key              | Action                                                       |
+| ---------------- | ------------------------------------------------------------ |
+| `s` + 2 chữ cái  | **Flash jump**: nhảy tới bất kỳ vị trí nào đang thấy trên màn hình |
+| `S`              | Flash Treesitter: chọn node (nhấn nhiều lần để mở rộng vùng chọn, sửa nhiều chỗ cùng lúc) |
+| `s` (visual)     | Flash jump trong vùng chọn                                    |
+| `R` (visual)     | Treesitter Search: tìm & chọn nhiều vùng để sửa cùng lúc      |
+| `gza`            | **Add** surround: thêm cặp ngoặc/quotes/tag quanh vùng chọn (`gza` + motion, visual: `gza` + input) |
+| `gzd`            | **Delete** surround: xóa cặp gần nhất (hỏi loại, ví dụ `)`, `"`, `t` = tag) |
+| `gzr`            | **Replace** surround: đổi cặp này thành cặp khác              |
+| `gzh`            | Highlight surround                                           |
+| `gzn`            | Cập nhật số dòng quét khi tìm surround xa                    |
+
+> Lưu ý: flash chiếm `s`/`S` (native substitute). Thay thế bằng `cl` (change line) / `cc`.
+
+Textobject mạnh hơn với mini.ai (dùng kèm `i`/`a` như `ci…`, `va…`, `di…`):
+
+| Textobject | Phạm vi                                   |
+| ---------- | ----------------------------------------- |
+| `f`        | Function call — `cif` sửa tham số, `caf` cả call |
+| `a`        | Argument — `cia` sửa 1 argument, `caa` cả danh sách |
+| `t`        | Tag HTML/JSX — `cit` sửa nội dung tag     |
+| `?`        | Condition/if/while — `ci?`                |
+| `_`        | Phần giữa 2 dấu `_` trong tên snake_case  |
+| `(`/`)`, `[`, `{`, `'`, `` ` `` | Bracket/quote nhiều dòng, đếm được (`2i(` = skip 1 tầng) |
+
+### Tests (`Space T`) — neotest
+
+Chạy được với Vitest/Jest (Angular, TS), pytest (Python), go test. Debug test (`Space Td`) dùng DAP: js-debug-adapter cho Jest/Vitest, debugpy cho pytest, delve cho go test.
+
+| Key             | Action                                    |
+| --------------- | ----------------------------------------- |
+| `Space Tt`      | Run test tại con trỏ                      |
+| `Space Tf`      | Run tất cả test trong file                |
+| `Space Tp`      | Run tất cả test trong project             |
+| `Space Td`      | **Debug test** bằng DAP (breakpoint như thường) |
+| `Space To`      | Output của test dưới con trỏ (hover)      |
+| `Space TO`      | Cửa sổ output                             |
+| `Space T<CR>`   | Test summary tree                         |
+| `]T` / `[T`     | Nhảy tới test kế tiếp / trước đó          |
+| `Space TWt`     | **Watch** test tại con trỏ (tự chạy lại khi lưu) |
+| `Space TWf`     | Watch cả file                             |
+| `Space TWp`     | Watch cả project                          |
+| `Space TWS`     | Stop mọi watch                             |
+
+> Karma/Jasmine (Angular cũ chạy bằng browser) neotest không hỗ trợ — cần Vitest/Jest.
+
 ### LSP (enabled automatically per language)
 
 | Key         | Action                            |
@@ -168,6 +233,8 @@ To update later: `<Leader>pa` (update Lazy + Mason) or `:Lazy sync`.
 
 ### Debug (DAP)
 
+Debug được Node/TS (`pwa-node`: launch file hiện tại, chạy qua `npx tsx`, attach process), Go (delve: debug package, debug test file/package), Python (debugpy), Bash. `.vscode/launch.json` (nếu có) được nạp tự động.
+
 | Key        | Action                 |
 | ---------- | ---------------------- |
 | `Space dc` | Start / Continue (F5)  |
@@ -206,6 +273,7 @@ To update later: `<Leader>pa` (update Lazy + Mason) or `:Lazy sync`.
 | `Space uz`       | Toggle color highlight            |
 | `Space uZ`       | Zen mode                          |
 | `Space uh`       | Inlay hints (buffer)              |
+| `Space uH`       | Inlay hints (global)              |
 | `Space uf`       | Format on save (buffer)           |
 | `Space ur`       | Reference highlighting            |
 | `Space u(` / `u)` | Rainbow delimiters (buffer/global) |
@@ -225,6 +293,8 @@ To update later: `<Leader>pa` (update Lazy + Mason) or `:Lazy sync`.
 
 ### Sessions (`Space S`)
 
+Tự động: khi thoát nvim, AstroNvim tự lưu **Last Session** + **dirsession** (session riêng cho từng thư mục). Lần sau mở nvim **không kèm file** trong thư mục đó → session tự khôi phục (buffers, cửa sổ, cwd). Mở có file → không khôi phục.
+
 | Key        | Action                       |
 | ---------- | ---------------------------- |
 | `Space Ss` | Save session                 |
@@ -241,9 +311,11 @@ To update later: `<Leader>pa` (update Lazy + Mason) or `:Lazy sync`.
 │   ├── community.lua      # import AstroCommunity packs
 │   ├── polish.lua         # runs last (currently disabled)
 │   └── plugins/           # per-plugin overrides
-│       ├── astrocore.lua  # options, mappings, autocmds
-│       ├── astrolsp.lua   # LSP servers, format_on_save
+│       ├── astrocore.lua  # options, mappings, autocmds (session restore)
+│       ├── astrolsp.lua   # LSP servers, format_on_save, inlay hints
 │       ├── mason.lua      # tools auto-installed via Mason
+│       ├── neotest.lua    # test adapters (vitest/jest, pytest, go)
+│       ├── vtsls.lua      # vtsls perf + TS/JS inlay hints settings
 │       └── ...
 └── lsp/
     └── angularls.lua      # angularls only attaches inside Angular projects
