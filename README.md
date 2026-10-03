@@ -6,31 +6,31 @@ Personal Neovim configuration based on [AstroNvim](https://astronvim.com) v6, pr
 - **Completion:** blink.cmp
 - **File explorer:** neo-tree
 - **Fuzzy finder:** snacks.nvim
-- **Editing:** flash.nvim (jump), mini.surround, mini.ai (textobjects)
+- **Editing:** flash.nvim (jump), mini.surround, mini.ai (textobjects), grug-far.nvim (search & replace)
 - **Tests:** neotest (Vitest/Jest, pytest, go test) + DAP debugging
 - **Git:** lazygit (`Space gg`), gitsigns blame, diffview.nvim (diff/file history/merge conflicts)
-- **Kubernetes:** kubectl.nvim (`Space k`) — cần binary `kubectl`
+- **Kubernetes:** kubectl.nvim (`Space k`) — requires the `kubectl` binary
 - **LSP/formatters:** auto-installed via Mason (vtsls, angularls, basedpyright, ruff, gopls, lua_ls, yaml/helm/docker/ansible/terraform LSPs, prettierd, stylua...)
 - **Font:** Maple Mono NF
 
 ## Requirements
 
-- macOS (Homebrew) hoặc Linux (Debian/Ubuntu & derivatives, Arch, Fedora, Alpine — kể cả iSH trên iPad)
+- macOS (Homebrew) or Linux (Debian/Ubuntu & derivatives, Arch, Fedora, Alpine — including iSH on iPad)
 - Neovim **>= 0.11** (AstroNvim v6 requirement; currently running on 0.12.x)
 - Git
 
 ## Quick setup (macOS / Linux / iSH)
 
-Một lệnh duy nhất cài đủ mọi dependency (Neovim, Maple Mono NF, Node LTS qua nvm, git/ripgrep/fd/lazygit/shellcheck/shfmt, C toolchain, python3) và symlink config vào `~/.config/nvim`:
+A single command installs every dependency (Neovim, Maple Mono NF, Node LTS via nvm, git/ripgrep/fd/lazygit/shellcheck/shfmt, C toolchain, python3) and symlinks the config into `~/.config/nvim`:
 
 ```sh
 bash setup.sh
 ```
 
-Script idempotent (chạy lại bao nhiêu lần cũng an toàn). Ghi chú theo nền tảng:
+The script is idempotent (safe to rerun as many times as you like). Platform notes:
 
-- **Debian/Ubuntu:** Neovim được cài từ tarball chính thức (apt luôn cũ hơn 0.11); Node qua nvm như yêu cầu.
-- **Alpine / iSH (iPad):** Node cài qua `apk` (binary Node chính thức chỉ build cho glibc, không chạy trên musl/i386 của iSH). Trên iSH không cần cài font — font do app iOS render; lần mở nvim đầu sẽ chậm vì CPU emulate.
+- **Debian/Ubuntu:** Neovim is installed from the official tarball (apt is always older than 0.11); Node via nvm as required.
+- **Alpine / iSH (iPad):** Node is installed via `apk` (official Node binaries are built for glibc only and won't run on iSH's musl/i386). On iSH there is no need to install a font — fonts are rendered by the iOS app; the first nvim launch will be slow because of CPU emulation.
 
 ## Manual install (macOS)
 
@@ -81,7 +81,7 @@ nvim
 
 On first launch: lazy.nvim bootstraps plugins and Mason installs LSP servers/formatters automatically (takes a few minutes). Treesitter parsers are installed on demand when opening a new language (`auto_install = true`).
 
-To update later: `<Leader>pa` (update Lazy + Mason) or `:Lazy sync`. Sau khi update, **commit lại `lazy-lock.json`** để mọi máy cài đúng cùng phiên bản plugin, và chạy `:checkhealth` sau các update lớn.
+To update later: `<Leader>pa` (update Lazy + Mason) or `:Lazy sync`. After updating, **commit `lazy-lock.json` again** so every machine installs the exact same plugin versions, and run `:checkhealth` after major updates.
 
 ## Basic Usage
 
@@ -90,7 +90,7 @@ To update later: `<Leader>pa` (update Lazy + Mason) or `:Lazy sync`. Sau khi upd
 - File explorer: `Space e` toggles neo-tree, `Space o` focuses it.
 - Jumping: press `s` then type any 2 visible letters to jump there instantly (flash.nvim).
 - LSPs attach automatically by filetype; files are **formatted automatically on save** (prettierd/stylua/ruff...).
-- Inlay hints hiển thị type/parameter (TS/JS) — tắt tạm bằng `Space uh`.
+- Inlay hints show types/parameters (TS/JS) — temporarily turn them off with `Space uh`.
 - Completion (blink.cmp): suggestions appear as you type — `Tab`/`S-Tab` to select, `Enter` to accept, `Esc` to dismiss.
 - Floating terminal: `Ctrl+'` (or `Ctrl+/` depending on your terminal); lazygit: `Space gg`.
 - Quick exits: `Space Q` (quit AstroNvim), `Space q` (close window), `Space c` (close buffer).
@@ -130,6 +130,19 @@ To update later: `<Leader>pa` (update Lazy + Mason) or `:Lazy sync`. Sau khi upd
 | `Space fT`   | Find TODOs                        |
 | `Space f<CR>`| Resume previous search            |
 
+### Search & Replace (`Space s`) — grug-far.nvim
+
+`Space fw` only greps to *view* matches — grug-far replaces them in bulk (regex, per-file result preview, history/undo). Note the lowercase `s` — `Space S` (uppercase) is Sessions.
+
+| Key               | Action                                    |
+| ----------------- | ----------------------------------------- |
+| `Space ss`        | Search/Replace across the whole workspace |
+| `Space se`        | Only in files with the same filetype      |
+| `Space sf`        | Only in the current file                  |
+| `Space sw`        | Replace the word under the cursor         |
+| `Space s` (visual)| Replace the selected region               |
+| `gS` (in neo-tree)| Replace in the selected directory         |
+
 ### Buffer, Tab, Window
 
 | Key            | Action                              |
@@ -137,7 +150,7 @@ To update later: `<Leader>pa` (update Lazy + Mason) or `:Lazy sync`. Sau khi upd
 | `]b` / `[b`    | Next / previous buffer              |
 | `Space bb`     | Select buffer from tabline          |
 | `Space bd`     | Close buffer (pick from tabline)    |
-| `Space c`      | Close current buffer (buffer cuối → quay về dashboard) |
+| `Space c`      | Close current buffer (closing the last one returns to the dashboard) |
 | `Space bc`     | Close all buffers except current    |
 | `]t` / `[t`    | Next / previous tab                 |
 | `Ctrl+H/J/K/L` | Move between splits (H/J/K/L)       |
@@ -148,49 +161,49 @@ To update later: `<Leader>pa` (update Lazy + Mason) or `:Lazy sync`. Sau khi upd
 
 | Key              | Action                                                       |
 | ---------------- | ------------------------------------------------------------ |
-| `s` + 2 chữ cái  | **Flash jump**: nhảy tới bất kỳ vị trí nào đang thấy trên màn hình |
-| `S`              | Flash Treesitter: chọn node (nhấn nhiều lần để mở rộng vùng chọn, sửa nhiều chỗ cùng lúc) |
-| `s` (visual)     | Flash jump trong vùng chọn                                    |
-| `R` (visual)     | Treesitter Search: tìm & chọn nhiều vùng để sửa cùng lúc      |
-| `gza`            | **Add** surround: thêm cặp ngoặc/quotes/tag quanh vùng chọn (`gza` + motion, visual: `gza` + input) |
-| `gzd`            | **Delete** surround: xóa cặp gần nhất (hỏi loại, ví dụ `)`, `"`, `t` = tag) |
-| `gzr`            | **Replace** surround: đổi cặp này thành cặp khác              |
+| `s` + 2 letters  | **Flash jump**: jump to any location visible on screen       |
+| `S`              | Flash Treesitter: select a node (press repeatedly to expand the selection, edit multiple places at once) |
+| `s` (visual)     | Flash jump within the selection                              |
+| `R` (visual)     | Treesitter Search: find & select multiple regions to edit at once |
+| `gza`            | **Add** surround: wrap a selection in brackets/quotes/tags (`gza` + motion; visual: `gza` + input) |
+| `gzd`            | **Delete** surround: delete the nearest pair (prompts for the type, e.g. `)`, `"`, `t` = tag) |
+| `gzr`            | **Replace** surround: swap one pair for another              |
 | `gzh`            | Highlight surround                                           |
-| `gzn`            | Cập nhật số dòng quét khi tìm surround xa                    |
+| `gzn`            | Update the scan line count when searching for a distant surround |
 
-> Lưu ý: flash chiếm `s`/`S` (native substitute). Thay thế bằng `cl` (change line) / `cc`.
+> Note: flash takes over `s`/`S` (native substitute). Use `cl` (change line) / `cc` instead.
 
-Textobject mạnh hơn với mini.ai (dùng kèm `i`/`a` như `ci…`, `va…`, `di…`):
+More powerful textobjects with mini.ai (combine with `i`/`a` as in `ci…`, `va…`, `di…`):
 
-| Textobject | Phạm vi                                   |
-| ---------- | ----------------------------------------- |
-| `f`        | Function call — `cif` sửa tham số, `caf` cả call |
-| `a`        | Argument — `cia` sửa 1 argument, `caa` cả danh sách |
-| `t`        | Tag HTML/JSX — `cit` sửa nội dung tag     |
+| Textobject | Scope                                   |
+| ---------- | --------------------------------------- |
+| `f`        | Function call — `cif` changes the arguments, `caf` the whole call |
+| `a`        | Argument — `cia` changes one argument, `caa` the whole list |
+| `t`        | HTML/JSX tag — `cit` changes the tag content |
 | `?`        | Condition/if/while — `ci?`                |
-| `_`        | Phần giữa 2 dấu `_` trong tên snake_case  |
-| `(`/`)`, `[`, `{`, `'`, `` ` `` | Bracket/quote nhiều dòng, đếm được (`2i(` = skip 1 tầng) |
+| `_`        | The part between two `_` in a snake_case name |
+| `(`/`)`, `[`, `{`, `'`, `` ` `` | Multi-line brackets/quotes, count-aware (`2i(` = skip 1 level) |
 
 ### Tests (`Space T`) — neotest
 
-Chạy được với Vitest/Jest (Angular, TS), pytest (Python), go test. Debug test (`Space Td`) dùng DAP: js-debug-adapter cho Jest/Vitest, debugpy cho pytest, delve cho go test.
+Works with Vitest/Jest (Angular, TS), pytest (Python), go test. Test debugging (`Space Td`) uses DAP: js-debug-adapter for Jest/Vitest, debugpy for pytest, delve for go test.
 
 | Key             | Action                                    |
 | --------------- | ----------------------------------------- |
-| `Space Tt`      | Run test tại con trỏ                      |
-| `Space Tf`      | Run tất cả test trong file                |
-| `Space Tp`      | Run tất cả test trong project             |
-| `Space Td`      | **Debug test** bằng DAP (breakpoint như thường) |
-| `Space To`      | Output của test dưới con trỏ (hover)      |
-| `Space TO`      | Cửa sổ output                             |
+| `Space Tt`      | Run the test at the cursor                |
+| `Space Tf`      | Run all tests in the file                 |
+| `Space Tp`      | Run all tests in the project              |
+| `Space Td`      | **Debug test** with DAP (set breakpoints as usual) |
+| `Space To`      | Output of the test under the cursor (hover) |
+| `Space TO`      | Output window                             |
 | `Space T<CR>`   | Test summary tree                         |
-| `]T` / `[T`     | Nhảy tới test kế tiếp / trước đó          |
-| `Space TWt`     | **Watch** test tại con trỏ (tự chạy lại khi lưu) |
-| `Space TWf`     | Watch cả file                             |
-| `Space TWp`     | Watch cả project                          |
-| `Space TWS`     | Stop mọi watch                             |
+| `]T` / `[T`     | Jump to the next / previous test          |
+| `Space TWt`     | **Watch** the test at the cursor (re-runs on save) |
+| `Space TWf`     | Watch the whole file                      |
+| `Space TWp`     | Watch the whole project                   |
+| `Space TWS`     | Stop all watches                          |
 
-> Karma/Jasmine (Angular cũ chạy bằng browser) neotest không hỗ trợ — cần Vitest/Jest.
+> Karma/Jasmine (older Angular running in a browser) is not supported by neotest — use Vitest/Jest.
 
 ### LSP (enabled automatically per language)
 
@@ -207,7 +220,7 @@ Chạy được với Vitest/Jest (Angular, TS), pytest (Python), go test. Debug
 | `gO`        | Document symbols (outline)        |
 | `gK`        | Signature help                    |
 | `gl`        | Hover diagnostics                 |
-| `]r` / `[r` | Next / previous reference của symbol dưới con trỏ |
+| `]r` / `[r` | Next / previous reference of the symbol under the cursor |
 | `[d` / `]d` | Previous / next diagnostic        |
 | `Ctrl+W d`  | Diagnostic popup under cursor     |
 | `Space lf`  | Format buffer                     |
@@ -238,25 +251,25 @@ Chạy được với Vitest/Jest (Angular, TS), pytest (Python), go test. Debug
 
 | Command                | Action                                                          |
 | ---------------------- | --------------------------------------------------------------- |
-| `:DiffviewOpen`        | Diff working tree so với git (`:DiffviewOpen HEAD~2`, `:DiffviewOpen main...feat` để chọn range/nhánh) |
-| `:DiffviewFileHistory %` | Lịch sử commit của file hiện tại (bỏ `%` = cả repo)          |
-| `:DiffviewClose`       | Thoát diffview, quay lại buffer cũ                              |
+| `:DiffviewOpen`        | Diff the working tree against git (`:DiffviewOpen HEAD~2`, `:DiffviewOpen main...feat` to pick a range/branch) |
+| `:DiffviewFileHistory %` | Commit history of the current file (drop `%` for the whole repo) |
+| `:DiffviewClose`       | Leave diffview and return to the previous buffer                |
 
-Khi đang merge/rebase, `:DiffviewOpen` liệt kê các file conflict ở panel trái; mở file conflict lên sẽ có lựa chọn ours/theirs/both ngay trong view. Xem thêm: `:h diffview-commands`.
+During a merge/rebase, `:DiffviewOpen` lists conflicted files in the left panel; open a conflicted file and you get ours/theirs/both choices right in the view. See also: `:h diffview-commands`.
 
 ### Kubernetes (kubectl.nvim)
 
 | Key / Command | Action                                             |
 | ------------- | -------------------------------------------------- |
-| `Space k`     | Mở/đóng panel kubectl (pods, logs, deploy, edit…)  |
-| `:Kubectx`    | Đổi context                                       |
-| `:Kubens`     | Đổi namespace                                     |
+| `Space k`     | Toggle the kubectl panel (pods, logs, deploy, edit…) |
+| `:Kubectx`    | Switch context                                    |
+| `:Kubens`     | Switch namespace                                  |
 
-Cần có binary `kubectl` trên máy (`brew install kubectl`).
+Requires the `kubectl` binary on your machine (`brew install kubectl`).
 
 ### Debug (DAP)
 
-Debug được Node/TS (`pwa-node`: launch file hiện tại, chạy qua `npx tsx`, attach process), Go (delve: debug package, debug test file/package), Python (debugpy), Bash. `.vscode/launch.json` (nếu có) được nạp tự động.
+Debug Node/TS (`pwa-node`: launch the current file, run via `npx tsx`, or attach to a process), Go (delve: debug a package or a test file/package), Python (debugpy), Bash. `.vscode/launch.json` (if present) is loaded automatically.
 
 | Key        | Action                 |
 | ---------- | ---------------------- |
@@ -317,7 +330,7 @@ Debug được Node/TS (`pwa-node`: launch file hiện tại, chạy qua `npx ts
 
 ### Sessions (`Space S`)
 
-Tự động: khi thoát nvim, AstroNvim tự lưu **Last Session** + **dirsession** (session riêng cho từng thư mục). Lần sau mở nvim **không kèm file** trong thư mục đó → session tự khôi phục (buffers, cửa sổ, cwd). Mở có file → không khôi phục.
+Automatic: when you quit nvim, AstroNvim saves the **Last Session** + a **dirsession** (a separate session per folder). The next time you open nvim **without a file** in that folder → the session is restored automatically (buffers, windows, cwd). Opening with a file → no restore.
 
 | Key        | Action                       |
 | ---------- | ---------------------------- |
