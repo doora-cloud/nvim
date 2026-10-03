@@ -11,6 +11,7 @@ Personal Neovim configuration based on [AstroNvim](https://astronvim.com) v6, pr
 - **Git:** lazygit (`Space gg`), gitsigns blame, diffview.nvim (diff/file history), git-conflict.nvim (conflict highlight + `Space m` resolve keys)
 - **Kubernetes:** kubectl.nvim (`Space k`) — requires the `kubectl` binary
 - **Nx:** nxls LSP (autocomplete in `nx.json`/`project.json`) + nx-console.nvim (`Space N` browse & run tasks) — the LSP needs `npm i -g nxls`
+- **AI assistant:** avante.nvim (`Space a` ask/edit sidebar, Cursor-style) — **only loads when `NVIM_AI_PROVIDER` is exported**; backends: z.ai / OpenAI / Cursor Agent, provider & key live in `~/.zshrc`
 - **LSP/formatters:** auto-installed via Mason (vtsls, angularls, basedpyright, ruff, gopls, lua_ls, yaml/helm/docker/ansible/terraform LSPs, prettierd, stylua...)
 - **Font:** Maple Mono NF
 
@@ -94,6 +95,7 @@ To update later: `<Leader>pa` (update Lazy + Mason) or `:Lazy sync`. After updat
 - Inlay hints show types/parameters (TS/JS) — temporarily turn them off with `Space uh`.
 - Completion (blink.cmp): suggestions appear as you type — `Tab`/`S-Tab` to select, `Enter` to accept, `Esc` to dismiss.
 - Floating terminal: `Ctrl+'` (or `Ctrl+/` depending on your terminal); lazygit: `Space gg`.
+- AI assistant: `Space aa` opens the avante sidebar (needs `NVIM_AI_PROVIDER` exported — otherwise the whole plugin stays off).
 - Quick exits: `Space Q` (quit AstroNvim), `Space q` (close window), `Space c` (close buffer).
 
 ## Keybindings
@@ -303,6 +305,46 @@ Browse Nx projects/targets and run them from the editor (needs an Nx monorepo wi
 
 `:NxGraph` opens the project graph in your browser; the other `:Nx*` commands mirror the keys above. The prefix is capital `N` — lowercase `Space n` is New File.
 
+### AI Assistant (`Space a`) — avante.nvim
+
+Cursor-style AI sidebar: ask questions about the open file, edit selections with a prompt, apply the suggested diffs in place. **The plugin only loads when `NVIM_AI_PROVIDER` is exported** — a machine that exports nothing skips it entirely, no keymaps taken. The exported value picks the backend (add more under `providers`/`acp_providers` in `lua/plugins/avante.lua`):
+
+| `NVIM_AI_PROVIDER` | Mode              | Key to export                        | Notes                                        |
+| ------------------ | ----------------- | ------------------------------------ | -------------------------------------------- |
+| `zai`              | Chat sidebar      | `ZAI_API_KEY` (GLM Coding Plan)      | `glm-5.3` via the z.ai coding endpoint       |
+| `openai`           | Chat sidebar      | `OPENAI_API_KEY`                     | `gpt-5.2` by default                         |
+| `cursor`           | Cursor Agent (ACP)| `CURSOR_API_KEY` — or `agent login` once | needs Cursor's `agent` CLI on PATH        |
+
+```sh
+export NVIM_AI_PROVIDER=zai    # example: z.ai
+export ZAI_API_KEY=...         # token for the provider above
+export NVIM_AI_MODEL=glm-5.3   # optional: override the chat model (zai/openai)
+```
+
+nvim must be started from a shell that has these exports (launching from the GUI/Dock means no AI). In `cursor` mode the sidebar drives Cursor's agent instead of a plain chat model — pick the agent's model with `Space aM`.
+
+| Key                  | Action                                        |
+| -------------------- | --------------------------------------------- |
+| `Space aa`           | Ask — open the sidebar with the current file as context |
+| `Space aa` (visual)  | Ask about the selected code                   |
+| `Space ae` (visual)  | Edit the selection from a prompt              |
+| `Space an`           | New ask (fresh conversation)                  |
+| `Space at`           | Toggle the sidebar                            |
+| `Space af`           | Focus the sidebar                             |
+| `Space ah`           | Pick a previous conversation (history)        |
+| `Space a?`           | Switch model                                  |
+| `Space aB`           | Add all open buffers to the chat context      |
+| `Space aC`           | Toggle adding the current buffer/selection to the context |
+| `Space aR`           | Show the repo map                             |
+| `Space ar`           | Refresh the answer                            |
+| `Space aS`           | Stop generating                               |
+| `Space as`           | Toggle inline suggestion                      |
+| `Space az`           | Zen mode                                      |
+| `Space am` / ` aM`   | ACP (agentic) mode / pick the ACP model       |
+| `Space ad`           | Toggle debug mode                             |
+
+The sidebar itself has additional buffer-local keys (apply/reject the suggested diff, navigation) — see the [avante.nvim README](https://github.com/yetone/avante.nvim).
+
 ### Debug (DAP)
 
 Debug Node/TS (`pwa-node`: launch the current file, run via `npx tsx`, or attach to a process), Go (delve: debug a package or a test file/package), Python (debugpy), Bash. `.vscode/launch.json` (if present) is loaded automatically.
@@ -390,6 +432,7 @@ Automatic: when you quit nvim, AstroNvim saves the **Last Session** + a **dirses
 │       ├── neotest.lua    # test adapters (vitest/jest, pytest, go)
 │       ├── vtsls.lua      # vtsls perf + TS/JS inlay hints settings
 │       ├── nx.lua         # Nx: nxls server + nx-console task runner
+│       ├── avante.lua     # AI assistant (avante.nvim, gated on NVIM_AI_PROVIDER)
 │       └── ...
 └── lsp/
     └── angularls.lua      # angularls only attaches inside Angular projects
