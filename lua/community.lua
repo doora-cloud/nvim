@@ -26,13 +26,11 @@ return {
   { import = "astrocommunity.pack.typescript" },
   { import = "astrocommunity.pack.xml" },
   { import = "astrocommunity.pack.yaml" },
-  -- editing power: jump anywhere, surround pairs/tags, better textobjects
   { import = "astrocommunity.motion.flash-nvim" },
   { import = "astrocommunity.motion.mini-surround" },
   { import = "astrocommunity.motion.mini-ai" },
-  -- run/debug tests inside the editor (adapters configured in lua/plugins/neotest.lua)
   { import = "astrocommunity.test.neotest" },
-  -- eye candy: fancy cmdline/messages, animated indent scope, smooth cursor
+  { import = "astrocommunity.git.diffview-nvim" },
   { import = "astrocommunity.utility.noice-nvim" },
   { import = "astrocommunity.indent.mini-indentscope" },
   { import = "astrocommunity.scrolling.mini-animate" },

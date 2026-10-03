@@ -18,9 +18,9 @@ return {
     opts.adapters = opts.adapters or {}
     vim.list_extend(opts.adapters, {
       -- Angular >= 17 (vitest) and plain vitest projects
-      require("neotest-vitest") {},
-      require("neotest-python") { runner = "pytest", dap = { justMyCode = false } },
-      require("neotest-go") {},
+      require "neotest-vitest" {},
+      require "neotest-python" { runner = "pytest", dap = { justMyCode = false } },
+      require "neotest-go" {},
     })
   end,
 }

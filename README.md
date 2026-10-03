@@ -8,6 +8,8 @@ Personal Neovim configuration based on [AstroNvim](https://astronvim.com) v6, pr
 - **Fuzzy finder:** snacks.nvim
 - **Editing:** flash.nvim (jump), mini.surround, mini.ai (textobjects)
 - **Tests:** neotest (Vitest/Jest, pytest, go test) + DAP debugging
+- **Git:** lazygit (`Space gg`), gitsigns blame, diffview.nvim (diff/file history/merge conflicts)
+- **Kubernetes:** kubectl.nvim (`Space k`) — cần binary `kubectl`
 - **LSP/formatters:** auto-installed via Mason (vtsls, angularls, basedpyright, ruff, gopls, lua_ls, yaml/helm/docker/ansible/terraform LSPs, prettierd, stylua...)
 - **Font:** Maple Mono NF
 
@@ -79,7 +81,7 @@ nvim
 
 On first launch: lazy.nvim bootstraps plugins and Mason installs LSP servers/formatters automatically (takes a few minutes). Treesitter parsers are installed on demand when opening a new language (`auto_install = true`).
 
-To update later: `<Leader>pa` (update Lazy + Mason) or `:Lazy sync`.
+To update later: `<Leader>pa` (update Lazy + Mason) or `:Lazy sync`. Sau khi update, **commit lại `lazy-lock.json`** để mọi máy cài đúng cùng phiên bản plugin, và chạy `:checkhealth` sau các update lớn.
 
 ## Basic Usage
 
@@ -135,7 +137,7 @@ To update later: `<Leader>pa` (update Lazy + Mason) or `:Lazy sync`.
 | `]b` / `[b`    | Next / previous buffer              |
 | `Space bb`     | Select buffer from tabline          |
 | `Space bd`     | Close buffer (pick from tabline)    |
-| `Space c`      | Close current buffer                |
+| `Space c`      | Close current buffer (buffer cuối → quay về dashboard) |
 | `Space bc`     | Close all buffers except current    |
 | `]t` / `[t`    | Next / previous tab                 |
 | `Ctrl+H/J/K/L` | Move between splits (H/J/K/L)       |
@@ -205,6 +207,7 @@ Chạy được với Vitest/Jest (Angular, TS), pytest (Python), go test. Debug
 | `gO`        | Document symbols (outline)        |
 | `gK`        | Signature help                    |
 | `gl`        | Hover diagnostics                 |
+| `]r` / `[r` | Next / previous reference của symbol dưới con trỏ |
 | `[d` / `]d` | Previous / next diagnostic        |
 | `Ctrl+W d`  | Diagnostic popup under cursor     |
 | `Space lf`  | Format buffer                     |
@@ -229,7 +232,27 @@ Chạy được với Vitest/Jest (Angular, TS), pytest (Python), go test. Debug
 | `Space gr`  | Reset hunk                      |
 | `Space gp`  | Preview hunk (inline)           |
 | `Space gl`  | Git blame current line          |
-| `Space gd`  | View diff                       |
+| `Space gd`  | View diff (gitsigns, 1 file — vimdiff) |
+
+#### Diff review & conflicts (diffview.nvim)
+
+| Command                | Action                                                          |
+| ---------------------- | --------------------------------------------------------------- |
+| `:DiffviewOpen`        | Diff working tree so với git (`:DiffviewOpen HEAD~2`, `:DiffviewOpen main...feat` để chọn range/nhánh) |
+| `:DiffviewFileHistory %` | Lịch sử commit của file hiện tại (bỏ `%` = cả repo)          |
+| `:DiffviewClose`       | Thoát diffview, quay lại buffer cũ                              |
+
+Khi đang merge/rebase, `:DiffviewOpen` liệt kê các file conflict ở panel trái; mở file conflict lên sẽ có lựa chọn ours/theirs/both ngay trong view. Xem thêm: `:h diffview-commands`.
+
+### Kubernetes (kubectl.nvim)
+
+| Key / Command | Action                                             |
+| ------------- | -------------------------------------------------- |
+| `Space k`     | Mở/đóng panel kubectl (pods, logs, deploy, edit…)  |
+| `:Kubectx`    | Đổi context                                       |
+| `:Kubens`     | Đổi namespace                                     |
+
+Cần có binary `kubectl` trên máy (`brew install kubectl`).
 
 ### Debug (DAP)
 
@@ -276,6 +299,7 @@ Debug được Node/TS (`pwa-node`: launch file hiện tại, chạy qua `npx ts
 | `Space uH`       | Inlay hints (global)              |
 | `Space uf`       | Format on save (buffer)           |
 | `Space ur`       | Reference highlighting            |
+| `Space uY`       | Semantic highlight LSP (buffer)   |
 | `Space u(` / `u)` | Rainbow delimiters (buffer/global) |
 | `Space u\|`      | Indent guides                     |
 
