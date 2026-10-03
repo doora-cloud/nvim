@@ -92,6 +92,7 @@ To update later: `<Leader>pa` (update Lazy + Mason) or `:Lazy sync`. After updat
 - File explorer: `Space e` toggles neo-tree, `Space o` focuses it.
 - Jumping: press `s` then type any 2 visible letters to jump there instantly (flash.nvim).
 - LSPs attach automatically by filetype; files are **formatted automatically on save** (prettierd/stylua/ruff...).
+- Node version auto-switches per project: opening a file in a directory with a `.nvmrc` repoints `$PATH`/`$NVM_BIN` and restarts running LSP servers (needs the version installed via `nvm install`).
 - Inlay hints show types/parameters (TS/JS) — temporarily turn them off with `Space uh`.
 - Completion (blink.cmp): suggestions appear as you type — `Tab`/`S-Tab` to select, `Enter` to accept, `Esc` to dismiss.
 - Floating terminal: `Ctrl+'` (or `Ctrl+/` depending on your terminal); lazygit: `Space gg`.
