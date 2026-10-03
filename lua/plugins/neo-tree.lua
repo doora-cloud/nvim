@@ -7,6 +7,12 @@ return {
       window = {
         width = 38,
       },
+      filesystem = {
+        filtered_items = {
+          hide_dotfiles = false,
+          never_show = { ".git", ".DS_Store" },
+        },
+      },
     },
   },
 }

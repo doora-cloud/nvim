@@ -8,8 +8,9 @@ Personal Neovim configuration based on [AstroNvim](https://astronvim.com) v6, pr
 - **Fuzzy finder:** snacks.nvim
 - **Editing:** flash.nvim (jump), mini.surround, mini.ai (textobjects), grug-far.nvim (search & replace)
 - **Tests:** neotest (Vitest/Jest, pytest, go test) + DAP debugging
-- **Git:** lazygit (`Space gg`), gitsigns blame, diffview.nvim (diff/file history/merge conflicts)
+- **Git:** lazygit (`Space gg`), gitsigns blame, diffview.nvim (diff/file history), git-conflict.nvim (conflict highlight + `Space m` resolve keys)
 - **Kubernetes:** kubectl.nvim (`Space k`) — requires the `kubectl` binary
+- **Nx:** nxls LSP (autocomplete in `nx.json`/`project.json`) + nx-console.nvim (`Space N` browse & run tasks) — the LSP needs `npm i -g nxls`
 - **LSP/formatters:** auto-installed via Mason (vtsls, angularls, basedpyright, ruff, gopls, lua_ls, yaml/helm/docker/ansible/terraform LSPs, prettierd, stylua...)
 - **Font:** Maple Mono NF
 
@@ -212,10 +213,12 @@ Works with Vitest/Jest (Angular, TS), pytest (Python), go test. Test debugging (
 | `K`         | Hover documentation               |
 | `gd`        | Definition of symbol (picker)     |
 | `gD`        | Declaration of symbol             |
-| `gy`        | Type definition                   |
-| `gI`        | Implementation                    |
+| `gy`        | Type definition (quickfix list)   |
+| `gI`        | Implementation (quickfix list)    |
 | `grn`       | Rename symbol                     |
-| `grr`       | References                        |
+| `grr`       | References (snacks picker)        |
+| `gri`       | Implementations (snacks picker)   |
+| `grt`       | Type definition (snacks picker)   |
 | `gra`       | Code action                       |
 | `gO`        | Document symbols (outline)        |
 | `gK`        | Signature help                    |
@@ -255,7 +258,21 @@ Works with Vitest/Jest (Angular, TS), pytest (Python), go test. Test debugging (
 | `:DiffviewFileHistory %` | Commit history of the current file (drop `%` for the whole repo) |
 | `:DiffviewClose`       | Leave diffview and return to the previous buffer                |
 
-During a merge/rebase, `:DiffviewOpen` lists conflicted files in the left panel; open a conflicted file and you get ours/theirs/both choices right in the view. See also: `:h diffview-commands`.
+During a merge/rebase, `:DiffviewOpen` lists conflicted files in the left panel and shows each conflict as a 3-way diff. For fast in-buffer resolution, use the git-conflict keys below. See also: `:h diffview-commands`.
+
+#### Conflict resolution (git-conflict.nvim)
+
+Conflict regions are highlighted in-buffer during merges/rebases. The keys below resolve the conflict under the cursor (ours/theirs/both also work on a visual selection):
+
+| Key         | Action                   |
+| ----------- | ------------------------ |
+| `Space mo`  | Keep **ours**            |
+| `Space mt`  | Keep **theirs**          |
+| `Space mb`  | Keep **both**            |
+| `Space m0`  | Keep **none**            |
+| `]x` / `[x` | Next / previous conflict |
+
+Commands like `:GitConflictChooseOurs`, `:GitConflictListQf` and `:GitConflictRefresh` are also available.
 
 ### Kubernetes (kubectl.nvim)
 
@@ -266,6 +283,25 @@ During a merge/rebase, `:DiffviewOpen` lists conflicted files in the left panel;
 | `:Kubens`     | Switch namespace                                  |
 
 Requires the `kubectl` binary on your machine (`brew install kubectl`).
+
+### Nx (`Space N`) — nx-console.nvim
+
+Browse Nx projects/targets and run them from the editor (needs an Nx monorepo with `node_modules` installed). Long-running targets (`serve`, `dev`, `watch`, `storybook`…) automatically run in a persistent bottom panel instead of a floating terminal. The `nxls` LSP (installed with `npm i -g nxls`, not via Mason) provides autocomplete for targets/executors inside `nx.json` and `project.json`.
+
+| Key         | Action                                  |
+| ----------- | --------------------------------------- |
+| `Space Nx`  | Pick a project → run one of its targets |
+| `Space Ne`  | Nx explorer sidebar (projects/targets)  |
+| `Space Ng`  | Run a generator                         |
+| `Space Nh`  | Recent tasks history                    |
+| `Space Na`  | Run tasks affected by your changes      |
+| `Space Nf`  | Project of the current file             |
+| `Space Nr`  | Re-run the last task                    |
+| `Space Ns`  | Stop running tasks                      |
+| `Space NR`  | Refresh the Nx workspace                |
+| `Space Np`  | Toggle the task panel                   |
+
+`:NxGraph` opens the project graph in your browser; the other `:Nx*` commands mirror the keys above. The prefix is capital `N` — lowercase `Space n` is New File.
 
 ### Debug (DAP)
 
@@ -353,6 +389,7 @@ Automatic: when you quit nvim, AstroNvim saves the **Last Session** + a **dirses
 │       ├── mason.lua      # tools auto-installed via Mason
 │       ├── neotest.lua    # test adapters (vitest/jest, pytest, go)
 │       ├── vtsls.lua      # vtsls perf + TS/JS inlay hints settings
+│       ├── nx.lua         # Nx: nxls server + nx-console task runner
 │       └── ...
 └── lsp/
     └── angularls.lua      # angularls only attaches inside Angular projects

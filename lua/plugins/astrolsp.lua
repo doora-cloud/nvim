@@ -73,6 +73,16 @@ return {
           desc = "References of cursor symbol",
           cond = "textDocument/references",
         },
+        gri = {
+          function() require("snacks").picker.lsp_implementations() end,
+          desc = "Implementations of cursor symbol",
+          cond = "textDocument/implementation",
+        },
+        grt = {
+          function() require("snacks").picker.lsp_type_definitions() end,
+          desc = "Type definition of cursor symbol",
+          cond = "textDocument/typeDefinition",
+        },
         ["<Leader>uY"] = {
           function() require("astrolsp.toggles").buffer_semantic_tokens() end,
           desc = "Toggle LSP semantic highlight (buffer)",

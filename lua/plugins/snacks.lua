@@ -20,12 +20,15 @@ return {
     opts.indent = { enabled = false }
     opts.scope = { enabled = false }
 
-    -- grr (lsp references): always keep the floating popup with list left +
-    -- preview right; snacks falls back to a vertical (preview-bottom) layout
-    -- when the window is narrower than 120 columns
+    -- grr/gri/grt (lsp references/implementations/type definitions): always
+    -- keep the floating popup with list left + preview right; snacks falls
+    -- back to a vertical (preview-bottom) layout when the window is narrower
+    -- than 120 columns
     opts.picker = {
       sources = {
         lsp_references = { layout = { preset = "telescope" } },
+        lsp_implementations = { layout = { preset = "telescope" } },
+        lsp_type_definitions = { layout = { preset = "telescope" } },
       },
     }
 
