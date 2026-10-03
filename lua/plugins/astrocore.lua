@@ -29,6 +29,7 @@ return {
         wrap = false, -- sets vim.opt.wrap
         scrolloff = 10, -- keep ~10 lines of context visible around the cursor
         smoothscroll = true, -- scroll by screen line instead of file line (wraps, long lines)
+        mousescroll = "ver:1", -- 1 line per wheel tick: default ver:3 jumps feel janky with macOS momentum scrolling
       },
       g = { -- vim.g.<key>
         -- configure global vim variables (vim.g)
